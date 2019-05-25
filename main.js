@@ -24,10 +24,13 @@ function startAdapter(options) {
 			if (command == "deactPiHole") {
 				if (piholeIntervall) clearInterval(piholeIntervall);
 
-				adapter.getState('deactPiHoleTime', function (err, state) {
+				/*
+				adapter.getState("deactPiHoleTime", function (err, state) {
+					adapter.log.info(state.val);
 					deactivatePihole(state.val);
 				});
-
+				*/
+				deactivatePihole();
 				//
 			}
 
