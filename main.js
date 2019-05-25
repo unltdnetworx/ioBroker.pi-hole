@@ -1,159 +1,363 @@
 "use strict";
 
-/*
- * Created with @iobroker/create-adapter v1.14.0
- */
-
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
 const utils = require("@iobroker/adapter-core");
+const request = require("request");
+let systemLanguage;
+let nameTranslation;
+let piholeIntervall;
+let valTagLang;
+let url;
+const valuePaths = ["getQueryTypes","version","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
+const c = request.jar();
 
-// Load your modules here, e.g.:
-// const fs = require("fs");
+let adapter;
+function startAdapter(options) {
+	options = options || {};
+	Object.assign(options, {
+		name: "pi-hole",
+		stateChange: function (id, state) {
+			let command = id.split(".").pop();
+            
+			// you can use the ack flag to detect if it is status (true) or command (false)
+			if (!state || state.ack) return;
+			
+			if (command == "deactPiHole") {
+				if (piholeIntervall) clearInterval(piholeIntervall);
 
-class PiHole extends utils.Adapter {
+				adapter.getState('deactPiHoleTime', function (err, state) {
+					deactivatePihole(state.val);
+				});
 
-	/**
-	 * @param {Partial<ioBroker.AdapterOptions>} [options={}]
-	 */
-	constructor(options) {
-		super({
-			...options,
-			name: "pi-hole",
-		});
-		this.on("ready", this.onReady.bind(this));
-		this.on("objectChange", this.onObjectChange.bind(this));
-		this.on("stateChange", this.onStateChange.bind(this));
-		// this.on("message", this.onMessage.bind(this));
-		this.on("unload", this.onUnload.bind(this));
+				//
+			}
+
+			if (command == "actPiHole") {
+				if (piholeIntervall) clearInterval(piholeIntervall);
+				activatePihole();
+			}
+		},
+		unload: function (callback) {
+			try {
+				if (piholeIntervall) clearInterval(piholeIntervall);
+				adapter.log.info("cleaned everything up...");
+				callback();
+			} catch (e) {
+				callback();
+			}
+		},
+		ready: function () {
+			adapter.getForeignObject("system.config", function (err, obj) {
+				if (err) {
+					adapter.log.error(err);
+					return;
+				} else if (obj) {
+					if (!obj.common.language) {
+						adapter.log.info("Language not set. English set therefore.");
+						//nameTranslation = require(__dirname + "/admin/i18n/en/translations.json")
+					} else {
+						systemLanguage = obj.common.language;
+						//nameTranslation = require(__dirname + "/admin/i18n/" + systemLanguage + "/translations.json")
+					}
+					url = "http://" + adapter.config.piholeIP + "/admin/api.php?";
+					main();
+				}
+			});
+		}
+	});
+	adapter = new utils.Adapter(options);
+    
+	return adapter;
+};
+
+function deactivatePihole(intSeconds){
+	let timeOff = "";
+	if (intSeconds) {
+		timeOff = "=" + intSeconds;
 	}
+	
+	request(
+		{
+			url: "http://" + adapter.config.piholeIP + "/admin/api.php?disable" + timeOff + "&auth=" + adapter.config.piholeToken,
+			json: true
+		},
+		function(error, response, content) {
 
-	/**
-	 * Is called when databases are connected and adapter received configuration.
-	 */
-	async onReady() {
-		// Initialize your adapter here
+			if (!error && response.statusCode == 200) {
+				//everything okay
+				adapter.log.warn("pi-hole deactivated");
+			} else {
+				adapter.log.error(error);
+			}
+		}
 
-		// Reset the connection indicator during startup
-		this.setState("info.connection", false, true);
+	);
+}
 
-		// The adapters config (in the instance object everything under the attribute "native") is accessible via
-		// this.config:
-		this.log.info("config option1: " + this.config.option1);
-		this.log.info("config option2: " + this.config.option2);
+function activatePihole(){	
+	request(
+		{
+			url: "http://" + adapter.config.piholeIP + "/admin/api.php?enable&auth=" + adapter.config.piholeToken,
+			json: true
+		},
+		function(error, response, content) {
 
-		/*
-		For every state in the system there has to be also an object of type state
-		Here a simple template for a boolean variable named "testVariable"
-		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-		*/
-		await this.setObjectAsync("testVariable", {
+			if (!error && response.statusCode == 200) {
+				//everything okay
+				adapter.log.warn("pi-hole activated");
+			} else {
+				adapter.log.error(error);
+			}
+		}
+
+	);
+}
+
+function translateName(strName) {
+	if(nameTranslation[strName]) {
+		return nameTranslation[strName];
+	} else {
+		return strName;
+	}
+}
+
+function getPiholeValues(strURL) {
+	request(
+		{
+			url: "http://" + adapter.config.piholeIP + "/admin/api.php?" + strURL + "&auth=" + adapter.config.piholeToken,
+			json: true
+		},
+		function(error, response, content) {
+
+			if (!error && response.statusCode == 200) {
+				//create channel for each specific url
+				adapter.setObjectNotExists(
+					strURL, {
+						common: {
+							name: strURL,
+						},
+						type: "channel"
+					}
+				);
+				
+				for (const i in content) {
+					if (typeof(content[i]) !== "object") {
+						if (content.hasOwnProperty(i)) {
+							adapter.setObjectNotExists(
+								strURL + "." + i, {
+									type: "state",
+									common: {
+										name: i,
+										type: ioBrokerTypeOf(typeof(content[i])),
+										read: true,
+										write: false,
+										unit: "",
+										role: "value"
+									},
+									native: {}
+								},
+								adapter.setState(
+									strURL + "." + i,
+									{val: content[i], ack: true}
+								)
+							);
+						}
+					} else {
+						if (content.hasOwnProperty(i)) {
+							adapter.setObjectNotExists(
+								strURL + "." + i, {
+									common: {
+										name: i,
+									},
+									type: "channel"
+								}
+							);
+							
+							for (const j in content[i]) {
+								if (typeof(content[i][j]) !== "object") {
+									if(strURL == "topItems" || strURL == "getQuerySources" || strURL == "overTimeData10mins" || strURL == "getForwardDestinations") {
+										
+										adapter.setObjectNotExists(
+											strURL + "." + i + ".data-table", {
+												type: "state",
+												common: {
+													name: "data-table",
+													type: "object",
+													read: true,
+													write: false,
+													unit: "",
+													role: "table"
+												},
+												native: {}
+											},
+											adapter.setState(
+												strURL + "." + i + ".data-table",
+												{val: content[i], ack: true}
+											)
+										);
+									} else {
+										adapter.setObjectNotExists(
+											strURL + "." + i + "." + j, {
+												type: "state",
+												common: {
+													name: i,
+													type: ioBrokerTypeOf(typeof(content[i][j])),
+													read: true,
+													write: false,
+													unit: "",
+													role: "value"
+												},
+												native: {}
+											},
+											adapter.setState(
+												strURL + "." + i + "." + j,
+												{val: content[i][j], ack: true}
+											)
+										);
+									}
+								} else {
+									if (content[i].hasOwnProperty(j)) {
+										adapter.setObjectNotExists(
+											strURL + "." + i + "." + j, {
+												common: {
+													name: j,
+												},
+												type: "channel"
+											}
+										);
+
+										for (const k in content[i][j]) {
+											if (typeof(content[i][j][k]) !== "object") {
+												adapter.setObjectNotExists(
+													strURL + "." + i + "." + j + "." + k, {
+														type: "state",
+														common: {
+															name: k,
+															type: ioBrokerTypeOf(typeof(content[i][j][k])),
+															read: true,
+															write: false,
+															unit: "",
+															role: "value"
+														},
+														native: {}
+													},
+													adapter.setState(
+														strURL + "." + i + "." + j + "." + k,
+														{val: content[i][j][k], ack: true}
+													)
+												);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+			} else {
+				adapter.log.error(error);
+			}
+		}
+
+	);
+}
+
+function ioBrokerTypeOf(typeInput) {
+	switch (typeInput) {
+		case "boolean":
+			return "indicator.working";
+		case "number":
+			return "value";
+		case "string":
+			return "text";
+		default:
+			return "state";
+	}
+	
+}
+
+function main() {
+	//Button for hardware reboot.
+	adapter.setObjectNotExists(
+		"deactPiHole", {
 			type: "state",
 			common: {
-				name: "testVariable",
+				//name: translateName("managerReboot"),
+				name: "deactivate pi-hole",
 				type: "boolean",
-				role: "indicator",
+				role: "button.stop",
 				read: true,
-				write: true,
+				write: true
 			},
-			native: {},
-		});
+			native: {}
+		},
+		adapter.subscribeStates("deactPiHole")
+	);
 
-		// in this template all states changes inside the adapters namespace are subscribed
-		this.subscribeStates("*");
+	adapter.setObjectNotExists(
+		"deactPiHoleTime", {
+			type: "state",
+			common: {
+				//name: translateName("managerReboot"),
+				name: "interval for deactivating pi-hole",
+				type: "number",
+				role: "value.interval",
+				read: true,
+				write: true
+			},
+			native: {}
+		},
+		adapter.subscribeStates("deactPiHole")
+	);
 
-		/*
-		setState examples
-		you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-		// the variable testVariable is set to true as command (ack=false)
-		await this.setStateAsync("testVariable", true);
+	adapter.setObjectNotExists(
+		"actPiHole", {
+			type: "state",
+			common: {
+				//name: translateName("managerReboot"),
+				name: "activate pi-hole",
+				type: "boolean",
+				role: "button.start",
+				read: true,
+				write: true
+			},
+			native: {}
+		},
+		adapter.subscribeStates("actPiHole")
+	);
+	
+	request(
+		{
+			url: "http://" + adapter.config.piholeIP + "/admin/api.php?topItems&auth=" + adapter.config.piholeToken,
+			json: true
+		},
+		function(error, response, content) {
 
-		// same thing, but the value is flagged "ack"
-		// ack should be always set to true if the value is received from or acknowledged from the target system
-		await this.setStateAsync("testVariable", { val: true, ack: true });
-
-		// same thing, but the state is deleted after 30s (getState will return null afterwards)
-		await this.setStateAsync("testVariable", { val: true, ack: true, expire: 30 });
-
-		// examples for the checkPassword/checkGroup functions
-		let result = await this.checkPasswordAsync("admin", "iobroker");
-		this.log.info("check user admin pw ioboker: " + result);
-
-		result = await this.checkGroupAsync("admin", "admin");
-		this.log.info("check group user admin group admin: " + result);
-	}
-
-	/**
-	 * Is called when adapter shuts down - callback has to be called under any circumstances!
-	 * @param {() => void} callback
-	 */
-	onUnload(callback) {
-		try {
-			this.log.info("cleaned everything up...");
-			callback();
-		} catch (e) {
-			callback();
+			if (!error && response.statusCode == 200) {
+				adapter.setState(
+					"info.connection",
+					{val: true, ack: true}
+				);
+			}
 		}
+	);
+	
+	valuePaths.forEach(function(item){
+		getPiholeValues(item);
+	});
+	if(adapter.config.piholeRenew > 1) {
+		piholeIntervall = setInterval(function(){
+			valuePaths.forEach(function(item){
+				getPiholeValues(item);
+			});
+		}, (adapter.config.piholeRenew * 1000));
 	}
-
-	/**
-	 * Is called if a subscribed object changes
-	 * @param {string} id
-	 * @param {ioBroker.Object | null | undefined} obj
-	 */
-	onObjectChange(id, obj) {
-		if (obj) {
-			// The object was changed
-			this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-		} else {
-			// The object was deleted
-			this.log.info(`object ${id} deleted`);
-		}
-	}
-
-	/**
-	 * Is called if a subscribed state changes
-	 * @param {string} id
-	 * @param {ioBroker.State | null | undefined} state
-	 */
-	onStateChange(id, state) {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-		} else {
-			// The state was deleted
-			this.log.info(`state ${id} deleted`);
-		}
-	}
-
-	// /**
-	//  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-	//  * Using this method requires "common.message" property to be set to true in io-package.json
-	//  * @param {ioBroker.Message} obj
-	//  */
-	// onMessage(obj) {
-	// 	if (typeof obj === "object" && obj.message) {
-	// 		if (obj.command === "send") {
-	// 			// e.g. send email or pushover or whatever
-	// 			this.log.info("send command");
-
-	// 			// Send response in callback if required
-	// 			if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
-	// 		}
-	// 	}
-	// }
-
 }
 
-// @ts-ignore parent is a valid property on module
-if (module.parent) {
-	// Export the constructor in compact mode
-	/**
-	 * @param {Partial<ioBroker.AdapterOptions>} [options={}]
-	 */
-	module.exports = (options) => new PiHole(options);
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+	module.exports = startAdapter;
 } else {
-	// otherwise start the instance directly
-	new PiHole();
-}
+	// or start the instance directly
+	startAdapter();
+} 

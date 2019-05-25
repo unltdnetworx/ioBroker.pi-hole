@@ -1,72 +1,30 @@
 ![Logo](admin/pi-hole.png)
 # ioBroker.pi-hole
+![Number of Installations](http://iobroker.live/badges/pi-hole-installed.svg) ![Number of Installations](http://iobroker.live/badges/pi-hole-stable.svg)
 
-[![NPM version](http://img.shields.io/npm/v/iobroker.pi-hole.svg)](https://www.npmjs.com/package/iobroker.pi-hole)
+=================
+
+[![Build Status](https://api.travis-ci.org/unltdnetworx/ioBroker.pi-hole.svg?branch=master)](https://travis-ci.org/unltdnetworx/ioBroker.pi-hole)
+[![NPM version](https://img.shields.io/npm/v/iobroker.pi-hole.svg)](https://www.npmjs.com/package/iobroker.pi-hole)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.pi-hole.svg)](https://www.npmjs.com/package/iobroker.pi-hole)
-[![Dependency Status](https://img.shields.io/david/unltdnetworx/iobroker.pi-hole.svg)](https://david-dm.org/unltdnetworx/iobroker.pi-hole)
-[![Known Vulnerabilities](https://snyk.io/test/github/unltdnetworx/ioBroker.pi-hole/badge.svg)](https://snyk.io/test/github/unltdnetworx/ioBroker.pi-hole)
 
 [![NPM](https://nodei.co/npm/iobroker.pi-hole.png?downloads=true)](https://nodei.co/npm/iobroker.pi-hole/)
 
-**Tests:**: [![Travis-CI](http://img.shields.io/travis/unltdnetworx/ioBroker.pi-hole/master.svg)](https://travis-ci.org/unltdnetworx/ioBroker.pi-hole)
+This adapter is a ment to read values from a running pi-hole and control the device (start/stop).
 
-## pi-hole adapter for ioBroker
+USE AT YOUR OWN RISK!!! ABSOLUTELY NO WARRANTY FOR DAMAGES, ETC.!!!
 
-manage a pi-hole installation
+Help or hints are welcome.
 
-## Developer manual
-This section is intended for the developer. It can be deleted later
+## Steps 
+1. Install the adpater
 
-### Getting started
+2. Fill in the fields of the adapter-admin. The ip-adress of the pi-hole device, the API-Token, which you can get from the admin web-interface of the pi-hole device (Settings/API/Get token), and obligatory the intervall to renew the values of the pi-hole (renew statistic in iobroker))
 
-You are almost done, only a few steps left:
-1. Create a new repository on GitHub with the name `ioBroker.pi-hole`
+3. Some of the objects are json-tables, you can use inside vis.
 
-1. Push all files to the GitHub repo. The creator has already set up the local repository for you:  
-	```bash
-	git push origin master
-	```
-1. Head over to [main.js](main.js) and start programming!
-
-### Scripts in `package.json`
-Several npm scripts are predefined for your convenience. You can run them using `npm run <scriptname>`
-| Script name | Description                                              |
-|-------------|----------------------------------------------------------|
-| `test:js`   | Executes the tests you defined in `*.test.js` files.     |
-| `test:package`    | Ensures your `package.json` and `io-package.json` are valid. |
-| `test` | Performs a minimal test run on package files and your tests. |
-| `coverage` | Generates code coverage using your test files. |
-
-### Writing tests
-When done right, testing code is invaluable, because it gives you the 
-confidence to change your code while knowing exactly if and when 
-something breaks. A good read on the topic of test-driven development 
-is https://hackernoon.com/introduction-to-test-driven-development-tdd-61a13bc92d92. 
-Although writing tests before the code might seem strange at first, but it has very 
-clear upsides.
-
-The template provides you with basic tests for the adapter startup and package files.
-It is recommended that you add your own tests into the mix.
-
-### Publishing the adapter
-See the documentation of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
-
-### Test the adapter manually on a local ioBroker installation
-In order to install the adapter locally without publishing, the following steps are recommended:
-1. Create a tarball from your dev directory:  
-	```bash
-	npm pack
-	```
-1. Upload the resulting file to your ioBroker host
-1. Install it locally (The paths are different on Windows):
-	```bash
-	cd /opt/iobroker
-	npm i /path/to/tarball.tgz
-	```
-
-For later updates, the above procedure is not necessary. Just do the following:
-1. Overwrite the changed files in the adapter directory (`/opt/iobroker/node_modules/iobroker.pi-hole`)
-1. Execute `iobroker upload pi-hole` on the ioBroker host
+## Requirements
+* running pi-hole device   
 
 ## Changelog
 

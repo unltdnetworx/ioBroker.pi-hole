@@ -19,7 +19,7 @@
 		"title": "pi-hole",
 		"titleLang": {
 			"en": "pi-hole",
-			"de": "Pi-Loch",
+			"de": "Pi-hole",
 			"ru": "пи-дыра",
 			"pt": "pi-hole",
 			"nl": "pi-hole",
@@ -46,7 +46,7 @@
 		],
 		"keywords": [
 			"pi-hole",
-			"ad filter"
+			"ad-filter"
 		],
 		"license": "MIT",
 		"platform": "Javascript/Node.js",
