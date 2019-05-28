@@ -17,6 +17,7 @@
     "url": "https://github.com/unltdnetworx/ioBroker.pi-hole"
   },
   "dependencies": {
+    "request": "^2.88.0",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "devDependencies": {
