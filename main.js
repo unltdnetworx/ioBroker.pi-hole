@@ -21,17 +21,17 @@ function startAdapter(options) {
 			// you can use the ack flag to detect if it is status (true) or command (false)
 			if (!state || state.ack) return;
 			
-			if (command == "deactPiHole") {
+			if (command == "deactPiHoleTime") {
+				
+				adapter.log.error("Deaktiviert")
 				if (piholeIntervall) clearInterval(piholeIntervall);
+				let deactTime = 0;
 
-				/*
-				adapter.getState("deactPiHoleTime", function (err, state) {
-					adapter.log.info(state.val);
-					deactivatePihole(state.val);
-				});
-				*/
-				deactivatePihole();
-				//
+				if(state.val > 0) {
+					deactTime = state.val;
+				}
+
+				deactivatePihole(deactTime);
 			}
 
 			if (command == "actPiHole") {
@@ -280,23 +280,6 @@ function ioBrokerTypeOf(typeInput) {
 }
 
 function main() {
-	//Button for hardware reboot.
-	adapter.setObjectNotExists(
-		"deactPiHole", {
-			type: "state",
-			common: {
-				//name: translateName("managerReboot"),
-				name: "deactivate pi-hole",
-				type: "boolean",
-				role: "button.stop",
-				read: true,
-				write: true
-			},
-			native: {}
-		},
-		adapter.subscribeStates("deactPiHole")
-	);
-
 	adapter.setObjectNotExists(
 		"deactPiHoleTime", {
 			type: "state",
@@ -310,7 +293,7 @@ function main() {
 			},
 			native: {}
 		},
-		adapter.subscribeStates("deactPiHole")
+		adapter.subscribeStates("deactPiHoleTime")
 	);
 
 	adapter.setObjectNotExists(

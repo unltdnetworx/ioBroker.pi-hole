@@ -23,13 +23,18 @@ Help or hints are welcome.
 
 3. Some of the objects are json-tables, you can use inside vis.
 
+4. Activate the filter by clicking the button "activate pi-hole", deactivate the filter by changing the value of "dactivate pi-hole" (0 for permanently, number for amount of seconds)
+
 ## Requirements
 * running pi-hole device   
 
 ## Changelog
 
+### 0.1.0
+* (unltdnetworx) fully working release for LTE_API
+
 ### 0.0.1
-* (Michael Schuster) initial release
+* (unltdnetworx) initial release
 
 ## License
 MIT License
