@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "0.2.0",
+		"version": "0.2.1",
 		"news": {
+			"0.2.1": {
+				"en": "small bugfix for storage",
+				"de": "kleine Fehlerbehebung für Datenbank"
+			},
 			"0.2.0": {
 				"en": "cleanup and bugfix for restart and storage",
 				"de": "Quellcode aufgeräumt, Fehlerbehebung vei Neustarts und Datenbank"
@@ -68,7 +72,7 @@
 		"type": "network",
 		"compact": true,
 		"materialize": true,
-		"supportCustoms": true,
+		"supportCustoms": false,
 		"dependencies": [
 			{
 				"admin": ">=3.0.0"

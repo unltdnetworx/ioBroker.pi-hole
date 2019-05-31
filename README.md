@@ -29,6 +29,9 @@ Help or hints are welcome.
 * running pi-hole device   
 
 ## Changelog
+### 0.2.1
+* (unltdnetworx) small bugfix for storage
+
 ### 0.2.0
 * (unltdnetworx) cleanup and bugfix for restart and storage
 
