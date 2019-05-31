@@ -24,7 +24,6 @@ function startAdapter(options) {
 			if (command == "deactPiHoleTime") {
 				
 				adapter.log.error("Deaktiviert")
-				if (piholeIntervall) clearInterval(piholeIntervall);
 				let deactTime = 0;
 
 				if(state.val > 0) {
@@ -32,11 +31,18 @@ function startAdapter(options) {
 				}
 
 				deactivatePihole(deactTime);
+				setTimeout(function(){
+					getPiholeValues("summary");
+					getPiholeValues("summaryRaw");
+				}, 1000);
 			}
 
 			if (command == "actPiHole") {
-				if (piholeIntervall) clearInterval(piholeIntervall);
 				activatePihole();
+				setTimeout(function(){
+					getPiholeValues("summary");
+					getPiholeValues("summaryRaw");
+				}, 1000);
 			}
 		},
 		unload: function (callback) {

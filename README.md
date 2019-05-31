@@ -29,6 +29,8 @@ Help or hints are welcome.
 * running pi-hole device   
 
 ## Changelog
+### 0.2.0
+* (unltdnetworx) cleanup and bugfix for restart and storage
 
 ### 0.1.0
 * (unltdnetworx) fully working release for LTE_API

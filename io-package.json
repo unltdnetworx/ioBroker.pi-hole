@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "0.1.0",
+		"version": "0.2.0",
 		"news": {
+			"0.2.0": {
+				"en": "cleanup and bugfix for restart and storage",
+				"de": "Quellcode aufgeräumt, Fehlerbehebung vei Neustarts und Datenbank"
+			},
 			"0.1.0": {
 				"en": "fully working release for LTE_API, RESTful API will come with 2.0.0 when API is officially released",
 				"de": "vollständige Unterstützung der LTE_API, RESTful API will come with version 2.0.0 nach offizieller Veröffentlichung der API"
@@ -74,10 +78,7 @@
 			}
 		]
 	},
-	"native": {
-		"option1": true,
-		"option2": "42"
-	},
+	"native": {},
 	"objects": [],
 	"instanceObjects": [
 		{
