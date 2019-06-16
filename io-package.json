@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "1.0.0",
+		"version": "1.0.1",
 		"news": {
+			"1.0.1": {
+				"en": "bugfixes",
+				"de": "Fehlerbehebungen"
+			},
 			"1.0.0": {
 				"en": "rise of version-number - stable version",
 				"de": "Versionshebung - stabile Version"

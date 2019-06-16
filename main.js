@@ -22,8 +22,6 @@ function startAdapter(options) {
 			if (!state || state.ack) return;
 			
 			if (command == "deactPiHoleTime") {
-				
-				adapter.log.error("Deaktiviert")
 				let deactTime = 0;
 
 				if(state.val > 0) {
@@ -93,7 +91,7 @@ function deactivatePihole(intSeconds){
 
 			if (!error && response.statusCode == 200) {
 				//everything okay
-				adapter.log.warn("pi-hole deactivated");
+				adapter.log.info("pi-hole deactivated");
 			} else {
 				adapter.log.error(error);
 			}
@@ -112,7 +110,7 @@ function activatePihole(){
 
 			if (!error && response.statusCode == 200) {
 				//everything okay
-				adapter.log.warn("pi-hole activated");
+				adapter.log.info("pi-hole activated");
 			} else {
 				adapter.log.error(error);
 			}

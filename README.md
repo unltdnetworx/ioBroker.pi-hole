@@ -29,6 +29,9 @@ Help or hints are welcome.
 * running pi-hole device   
 
 ## Changelog
+### 1.0.1
+* (unltdnetworx) bugfixes
+
 ### 1.0.0
 * (unltdnetworx) rise of version-number - stable version
 
