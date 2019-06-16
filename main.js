@@ -16,7 +16,7 @@ function startAdapter(options) {
 	Object.assign(options, {
 		name: "pi-hole",
 		stateChange: function (id, state) {
-			let command = id.split(".").pop();
+			const command = id.split(".").pop();
             
 			// you can use the ack flag to detect if it is status (true) or command (false)
 			if (!state || state.ack) return;
@@ -74,7 +74,7 @@ function startAdapter(options) {
 	adapter = new utils.Adapter(options);
     
 	return adapter;
-};
+}
 
 function deactivatePihole(intSeconds){
 	let timeOff = "";
@@ -87,7 +87,7 @@ function deactivatePihole(intSeconds){
 			url: "http://" + adapter.config.piholeIP + "/admin/api.php?disable" + timeOff + "&auth=" + adapter.config.piholeToken,
 			json: true
 		},
-		function(error, response, content) {
+		function(error, response) {
 
 			if (!error && response.statusCode == 200) {
 				//everything okay
@@ -106,7 +106,7 @@ function activatePihole(){
 			url: "http://" + adapter.config.piholeIP + "/admin/api.php?enable&auth=" + adapter.config.piholeToken,
 			json: true
 		},
-		function(error, response, content) {
+		function(error, response) {
 
 			if (!error && response.statusCode == 200) {
 				//everything okay
@@ -321,7 +321,7 @@ function main() {
 			url: "http://" + adapter.config.piholeIP + "/admin/api.php?topItems&auth=" + adapter.config.piholeToken,
 			json: true
 		},
-		function(error, response, content) {
+		function(error, response) {
 
 			if (!error && response.statusCode == 200) {
 				adapter.setState(
