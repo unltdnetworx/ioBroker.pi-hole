@@ -198,7 +198,7 @@ function getPiholeValues(strURL) {
 											},
 											adapter.setState(
 												strURL + "." + i + ".data-table",
-												{val: "[" + content[i] + "]", ack: true}
+												{val: "[" + JSON.stringify(content[i]) + "]", ack: true}
 											)
 										);
 									} else {
