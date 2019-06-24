@@ -29,5 +29,9 @@ systemDictionary = {
 	"piholeHttps": {
 		"en": "Use https instade of http",
 		"de": "https statt http verwenden"
+	},
+	"piholeAllCerts": {
+		"en": "accept all certificates",
+		"de": "alle Zertifikate akzeptieren"
 	}
 };

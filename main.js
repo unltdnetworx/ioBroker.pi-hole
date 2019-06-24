@@ -8,6 +8,7 @@ let nameTranslation;
 let piholeIntervall;
 let valTagLang;
 let url;
+let bolReject;
 const valuePaths = ["getQueryTypes","version","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
 
 let adapter;
@@ -65,6 +66,11 @@ function startAdapter(options) {
 						systemLanguage = obj.common.language;
 						//nameTranslation = require(__dirname + "/admin/i18n/" + systemLanguage + "/translations.json")
 					}
+					if (adapter.config.piholeAllCerts === true) {
+						bolReject = false;
+					} else {
+						bolReject = true;
+					}
 					url = "http://" + adapter.config.piholeIP + "/admin/api.php?";
 					main();
 				}
@@ -91,7 +97,8 @@ function deactivatePihole(intSeconds){
 	const httpsOptions = {
 		url: "https://" + adapter.config.piholeIP + "/admin/api.php?disable" + timeOff + "&auth=" + adapter.config.piholeToken,
 		method: "GET",
-		json: true/*,
+		json: true,
+		rejectUnauthorized: bolReject/*,
 		ca: ca*/
 	};
 
@@ -122,7 +129,8 @@ function activatePihole(){
 	const httpsOptions = {
 		url: "https://" + adapter.config.piholeIP + "/admin/api.php?enable&auth=" + adapter.config.piholeToken,
 		method: "GET",
-		json: true/*,
+		json: true,
+		rejectUnauthorized: bolReject/*,
 		ca: ca*/
 	};
 
@@ -161,7 +169,8 @@ function getPiholeValues(strURL) {
 	const httpsOptions = {
 		uri: "https://" + adapter.config.piholeIP + "/admin/api.php?" + strURL + "&auth=" + adapter.config.piholeToken,
 		method: "GET",
-		json: true/*,
+		json: true,
+		rejectUnauthorized: bolReject/*,
 		ca: ca*/
 	};
 
@@ -361,7 +370,8 @@ function main() {
 	const httpsOptions = {
 		url: "https://" + adapter.config.piholeIP + "/admin/api.php?topItems&auth=" + adapter.config.piholeToken,
 		method: "GET",
-		json: true/*,
+		json: true,
+		rejectUnauthorized: bolReject/*,
 		ca: ca*/
 	};
 
