@@ -25,5 +25,9 @@ systemDictionary = {
 	"piholeRenew": {
 		"en": "Time in seconds zu request new values from the pi-hole device.",
 		"de": "Zeit in Sekunden, bis neue Werte von Pi-hole geholt werden."
+	},
+	"piholeHttps": {
+		"en": "Use https instade of http",
+		"de": "https statt http verwenden"
 	}
 };

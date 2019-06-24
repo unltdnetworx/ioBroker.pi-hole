@@ -2,13 +2,13 @@
 
 const utils = require("@iobroker/adapter-core");
 const request = require("request");
+//const ca = require("ssl-root-cas/latest").create();
 let systemLanguage;
 let nameTranslation;
 let piholeIntervall;
 let valTagLang;
 let url;
 const valuePaths = ["getQueryTypes","version","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
-const c = request.jar();
 
 let adapter;
 function startAdapter(options) {
@@ -81,42 +81,66 @@ function deactivatePihole(intSeconds){
 	if (intSeconds) {
 		timeOff = "=" + intSeconds;
 	}
+
+	const httpOptions = {
+		url: "http://" + adapter.config.piholeIP + "/admin/api.php?disable" + timeOff + "&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true
+	};
+
+	const httpsOptions = {
+		url: "https://" + adapter.config.piholeIP + "/admin/api.php?disable" + timeOff + "&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true/*,
+		ca: ca*/
+	};
+
+	let reqOptions;
+	if (adapter.config.piholeHttps === true) {
+		reqOptions = httpsOptions;
+	} else {
+		reqOptions = httpOptions;
+	}
 	
-	request(
-		{
-			url: "http://" + adapter.config.piholeIP + "/admin/api.php?disable" + timeOff + "&auth=" + adapter.config.piholeToken,
-			json: true
-		},
-		function(error, response) {
-
-			if (!error && response.statusCode == 200) {
-				//everything okay
-				adapter.log.info("pi-hole deactivated");
-			} else {
-				adapter.log.error(error);
-			}
+	request(reqOptions, function(error, response) {
+		if (!error && response.statusCode == 200) {
+			//everything okay
+			adapter.log.info("pi-hole deactivated");
+		} else {
+			adapter.log.error(error);
 		}
-
-	);
+	});
 }
 
 function activatePihole(){	
-	request(
-		{
-			url: "http://" + adapter.config.piholeIP + "/admin/api.php?enable&auth=" + adapter.config.piholeToken,
-			json: true
-		},
-		function(error, response) {
+	const httpOptions = {
+		url: "http://" + adapter.config.piholeIP + "/admin/api.php?enable&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true
+	};
 
-			if (!error && response.statusCode == 200) {
-				//everything okay
-				adapter.log.info("pi-hole activated");
-			} else {
-				adapter.log.error(error);
-			}
+	const httpsOptions = {
+		url: "https://" + adapter.config.piholeIP + "/admin/api.php?enable&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true/*,
+		ca: ca*/
+	};
+
+	let reqOptions;
+	if (adapter.config.piholeHttps === true) {
+		reqOptions = httpsOptions;
+	} else {
+		reqOptions = httpOptions;
+	}
+	
+	request(reqOptions, function(error, response) {
+		if (!error && response.statusCode == 200) {
+			//everything okay
+			adapter.log.info("pi-hole activated");
+		} else {
+			adapter.log.error(error);
 		}
-
-	);
+	});
 }
 
 function translateName(strName) {
@@ -128,131 +152,144 @@ function translateName(strName) {
 }
 
 function getPiholeValues(strURL) {
-	request(
-		{
-			url: "http://" + adapter.config.piholeIP + "/admin/api.php?" + strURL + "&auth=" + adapter.config.piholeToken,
-			json: true
-		},
-		function(error, response, content) {
+	const httpOptions = {
+		uri: "http://" + adapter.config.piholeIP + "/admin/api.php?" + strURL + "&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true
+	};
 
-			if (!error && response.statusCode == 200) {
-				//create channel for each specific url
-				adapter.setObjectNotExists(
-					strURL, {
-						common: {
-							name: strURL,
-						},
-						type: "channel"
-					}
-				);
-				
-				for (const i in content) {
-					if (typeof(content[i]) !== "object") {
-						if (content.hasOwnProperty(i)) {
-							adapter.setObjectNotExists(
-								strURL + "." + i, {
-									type: "state",
-									common: {
-										name: i,
-										type: ioBrokerTypeOf(typeof(content[i])),
-										read: true,
-										write: false,
-										unit: "",
-										role: "value"
-									},
-									native: {}
+	const httpsOptions = {
+		uri: "https://" + adapter.config.piholeIP + "/admin/api.php?" + strURL + "&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true/*,
+		ca: ca*/
+	};
+
+	let reqOptions;
+	if (adapter.config.piholeHttps === true) {
+		reqOptions = httpsOptions;
+	} else {
+		reqOptions = httpOptions;
+	}
+	
+	request(reqOptions, function(error, response, content) {
+		if (!error && response.statusCode == 200) {
+		//create channel for each specific url
+			adapter.setObjectNotExists(
+				strURL, {
+					common: {
+						name: strURL,
+					},
+					type: "channel"
+				}
+			);
+			
+			for (const i in content) {
+				if (typeof(content[i]) !== "object") {
+					if (content.hasOwnProperty(i)) {
+						adapter.setObjectNotExists(
+							strURL + "." + i, {
+								type: "state",
+								common: {
+									name: i,
+									type: ioBrokerTypeOf(typeof(content[i])),
+									read: true,
+									write: false,
+									unit: "",
+									role: "value"
 								},
-								adapter.setState(
-									strURL + "." + i,
-									{val: content[i], ack: true}
-								)
-							);
-						}
-					} else {
-						if (content.hasOwnProperty(i)) {
-							adapter.setObjectNotExists(
-								strURL + "." + i, {
-									common: {
-										name: i,
-									},
-									type: "channel"
-								}
-							);
-							
-							for (const j in content[i]) {
-								if (typeof(content[i][j]) !== "object") {
-									if(strURL == "topItems" || strURL == "getQuerySources" || strURL == "overTimeData10mins" || strURL == "getForwardDestinations") {
-										
-										adapter.setObjectNotExists(
-											strURL + "." + i + ".data-table", {
-												type: "state",
-												common: {
-													name: "data-table",
-													type: "object",
-													read: true,
-													write: false,
-													unit: "",
-													role: "table"
-												},
-												native: {}
+								native: {}
+							},
+							adapter.setState(
+								strURL + "." + i,
+								{val: content[i], ack: true}
+							)
+						);
+					}
+				} else {
+					if (content.hasOwnProperty(i)) {
+						adapter.setObjectNotExists(
+							strURL + "." + i, {
+								common: {
+									name: i,
+								},
+								type: "channel"
+							}
+						);
+						
+						for (const j in content[i]) {
+							if (typeof(content[i][j]) !== "object") {
+								if(strURL == "topItems" || strURL == "getQuerySources" || strURL == "overTimeData10mins" || strURL == "getForwardDestinations") {
+									
+									adapter.setObjectNotExists(
+										strURL + "." + i + ".data-table", {
+											type: "state",
+											common: {
+												name: "data-table",
+												type: "object",
+												read: true,
+												write: false,
+												unit: "",
+												role: "table"
 											},
-											adapter.setState(
-												strURL + "." + i + ".data-table",
-												{val: "[" + JSON.stringify(content[i]) + "]", ack: true}
-											)
-										);
-									} else {
-										adapter.setObjectNotExists(
-											strURL + "." + i + "." + j, {
-												type: "state",
-												common: {
-													name: i,
-													type: ioBrokerTypeOf(typeof(content[i][j])),
-													read: true,
-													write: false,
-													unit: "",
-													role: "value"
-												},
-												native: {}
-											},
-											adapter.setState(
-												strURL + "." + i + "." + j,
-												{val: content[i][j], ack: true}
-											)
-										);
-									}
+											native: {}
+										},
+										adapter.setState(
+											strURL + "." + i + ".data-table",
+											{val: "[" + JSON.stringify(content[i]) + "]", ack: true}
+										)
+									);
 								} else {
-									if (content[i].hasOwnProperty(j)) {
-										adapter.setObjectNotExists(
-											strURL + "." + i + "." + j, {
-												common: {
-													name: j,
-												},
-												type: "channel"
-											}
-										);
+									adapter.setObjectNotExists(
+										strURL + "." + i + "." + j, {
+											type: "state",
+											common: {
+												name: i,
+												type: ioBrokerTypeOf(typeof(content[i][j])),
+												read: true,
+												write: false,
+												unit: "",
+												role: "value"
+											},
+											native: {}
+										},
+										adapter.setState(
+											strURL + "." + i + "." + j,
+											{val: content[i][j], ack: true}
+										)
+									);
+								}
+							} else {
+								if (content[i].hasOwnProperty(j)) {
+									adapter.setObjectNotExists(
+										strURL + "." + i + "." + j, {
+											common: {
+												name: j,
+											},
+											type: "channel"
+										}
+									);
 
-										for (const k in content[i][j]) {
-											if (typeof(content[i][j][k]) !== "object") {
-												adapter.setObjectNotExists(
-													strURL + "." + i + "." + j + "." + k, {
-														type: "state",
-														common: {
-															name: k,
-															type: ioBrokerTypeOf(typeof(content[i][j][k])),
-															read: true,
-															write: false,
-															unit: "",
-															role: "value"
-														},
-														native: {}
+									for (const k in content[i][j]) {
+										if (typeof(content[i][j][k]) !== "object") {
+											adapter.setObjectNotExists(
+												strURL + "." + i + "." + j + "." + k, {
+													type: "state",
+													common: {
+														name: k,
+														type: ioBrokerTypeOf(typeof(content[i][j][k])),
+														read: true,
+														write: false,
+														unit: "",
+														role: "value"
 													},
-													adapter.setState(
-														strURL + "." + i + "." + j + "." + k,
-														{val: content[i][j][k], ack: true}
-													)
-												);
-											}
+													native: {}
+												},
+												adapter.setState(
+													strURL + "." + i + "." + j + "." + k,
+													{val: content[i][j][k], ack: true}
+												)
+											);
 										}
 									}
 								}
@@ -260,13 +297,12 @@ function getPiholeValues(strURL) {
 						}
 					}
 				}
-
-			} else {
-				adapter.log.error(error);
 			}
-		}
 
-	);
+		} else {
+			adapter.log.error(error);
+		}
+	});
 }
 
 function ioBrokerTypeOf(typeInput) {
@@ -316,21 +352,34 @@ function main() {
 		adapter.subscribeStates("actPiHole")
 	);
 	
-	request(
-		{
-			url: "http://" + adapter.config.piholeIP + "/admin/api.php?topItems&auth=" + adapter.config.piholeToken,
-			json: true
-		},
-		function(error, response) {
+	const httpOptions = {
+		url: "http://" + adapter.config.piholeIP + "/admin/api.php?topItems&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true
+	};
 
-			if (!error && response.statusCode == 200) {
-				adapter.setState(
-					"info.connection",
-					{val: true, ack: true}
-				);
-			}
+	const httpsOptions = {
+		url: "https://" + adapter.config.piholeIP + "/admin/api.php?topItems&auth=" + adapter.config.piholeToken,
+		method: "GET",
+		json: true/*,
+		ca: ca*/
+	};
+
+	let reqOptions;
+	if (adapter.config.piholeHttps === true) {
+		reqOptions = httpsOptions;
+	} else {
+		reqOptions = httpOptions;
+	}
+
+	request(reqOptions, function(error, response) {
+		if (!error && response.statusCode == 200) {
+			adapter.setState(
+				"info.connection",
+				{val: true, ack: true}
+			);
 		}
-	);
+	});
 	
 	valuePaths.forEach(function(item){
 		getPiholeValues(item);
