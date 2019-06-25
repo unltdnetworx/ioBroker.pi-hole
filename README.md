@@ -32,6 +32,10 @@ Help or hints are welcome.
 
 ## Changelog
 
+### 1.2.0
+
+* (unltdnetworx) datapoint for available update
+
 ### 1.1.0
 
 * (unltdnetworx) support for ssl-connection

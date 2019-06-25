@@ -33,5 +33,9 @@ systemDictionary = {
 	"piholeAllCerts": {
 		"en": "accept all certificates",
 		"de": "alle Zertifikate akzeptieren"
+	},
+	"piholeUpdatePattern": {
+		"en": "text-pattern to be parse if update is available",
+		"de": "Text-Muster das gefunden werden muss, falls Update verfügbar ist"
 	}
 };

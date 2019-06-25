@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "1.1.0",
+		"version": "1.2.0",
 		"news": {
+			"1.2.0": {
+				"en": "datapoint for available update",
+				"de": "Datenpunkt für verfügbare Updates"
+			},
 			"1.1.0": {
 				"en": "support for ssl-connection",
 				"de": "Ünterstützung von SSL-Verbindungen"
@@ -94,7 +98,9 @@
 			}
 		]
 	},
-	"native": {},
+    "native": {
+        "piholeUpdatePattern": "Update available!"
+    },
 	"objects": [],
 	"instanceObjects": [
 		{

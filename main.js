@@ -5,6 +5,7 @@ const request = require("request");
 //const ca = require("ssl-root-cas/latest").create();
 let systemLanguage;
 let piholeIntervall;
+let piholeParseIntervall;
 let url;
 let bolReject;
 const valuePaths = ["getQueryTypes","version","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
@@ -45,6 +46,7 @@ function startAdapter(options) {
 		unload: function (callback) {
 			try {
 				if (piholeIntervall) clearInterval(piholeIntervall);
+				if (piholeParseIntervall) clearInterval(piholeParseIntervall);
 				adapter.log.info("cleaned everything up...");
 				callback();
 			} catch (e) {
@@ -76,6 +78,49 @@ function startAdapter(options) {
 	adapter = new utils.Adapter(options);
     
 	return adapter;
+}
+
+function parsePiHole() {
+	const httpOptions = {
+		url: "http://" + adapter.config.piholeIP + "/admin/index.php",
+		method: "GET",
+		json: true
+	};
+
+	const httpsOptions = {
+		url: "https://" + adapter.config.piholeIP + "/admin/index.php",
+		method: "GET",
+		json: true,
+		rejectUnauthorized: bolReject/*,
+		ca: ca*/
+	};
+
+	let reqOptions;
+	if (adapter.config.piholeHttps === true) {
+		reqOptions = httpsOptions;
+	} else {
+		reqOptions = httpOptions;
+	}
+
+	try {
+		request(reqOptions, function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				const update_pattern = /Update available!/;
+				if (body.match(update_pattern) === null) adapter.setState("updatePiholeAvailable", false);
+				else {
+					const update_arr =  body.match(update_pattern);
+					const update = update_arr[0];
+					const update_bool = update === ("Update available!") ? true : false;
+					adapter.setState(adapter.config.piholeUpdatPattern, update_bool);          
+				}
+			} else {
+				adapter.log.error("StatusCode = " + response.statusCode);
+				adapter.log.error(error, "error");
+			}
+		});
+	} catch (e) {
+		adapter.log.error("Unable to read pi-hole interface.");
+	}
 }
 
 function deactivatePihole(intSeconds){
@@ -318,10 +363,24 @@ function ioBrokerTypeOf(typeInput) {
 
 function main() {
 	adapter.setObjectNotExists(
+		"updatePiholeAvailable", {
+			type: "state",
+			common: {
+				name: "pi-hole update available",
+				type: "boolean", 
+				read: true,
+				write: true,
+				role: "indicator"
+			},
+			native: {}
+		},
+		adapter.subscribeStates("updatePiholeAvailable")
+	);
+	
+	adapter.setObjectNotExists(
 		"deactPiHoleTime", {
 			type: "state",
 			common: {
-				//name: translateName("managerReboot"),
 				name: "interval for deactivating pi-hole",
 				type: "number",
 				role: "value.interval",
@@ -337,7 +396,6 @@ function main() {
 		"actPiHole", {
 			type: "state",
 			common: {
-				//name: translateName("managerReboot"),
 				name: "activate pi-hole",
 				type: "boolean",
 				role: "button.start",
@@ -382,12 +440,19 @@ function main() {
 	valuePaths.forEach(function(item){
 		getPiholeValues(item);
 	});
+
+	parsePiHole();
+
 	if(adapter.config.piholeRenew > 1) {
 		piholeIntervall = setInterval(function(){
 			valuePaths.forEach(function(item){
 				getPiholeValues(item);
 			});
 		}, (adapter.config.piholeRenew * 1000));
+
+		piholeParseIntervall = setInterval(function(){
+			parsePiHole();
+		}, (adapter.config.piholeRenew * 2000));
 	}
 }
 
