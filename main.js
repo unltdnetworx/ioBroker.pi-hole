@@ -114,7 +114,6 @@ function parsePiHole() {
 					adapter.setState(adapter.config.piholeUpdatPattern, update_bool);          
 				}
 			} else {
-				adapter.log.error("StatusCode = " + response.statusCode);
 				adapter.log.error(error, "error");
 			}
 		});
