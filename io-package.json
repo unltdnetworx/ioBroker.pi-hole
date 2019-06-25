@@ -3,6 +3,10 @@
 		"name": "pi-hole",
 		"version": "1.1.0",
 		"news": {
+			"1.1.0": {
+				"en": "support for ssl-connection",
+				"de": "Ünterstützung von SSL-Verbindungen"
+			},
 			"1.0.1": {
 				"en": "bugfixes",
 				"de": "Fehlerbehebungen"

@@ -4,9 +4,7 @@ const utils = require("@iobroker/adapter-core");
 const request = require("request");
 //const ca = require("ssl-root-cas/latest").create();
 let systemLanguage;
-let nameTranslation;
 let piholeIntervall;
-let valTagLang;
 let url;
 let bolReject;
 const valuePaths = ["getQueryTypes","version","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
@@ -61,10 +59,8 @@ function startAdapter(options) {
 				} else if (obj) {
 					if (!obj.common.language) {
 						adapter.log.info("Language not set. English set therefore.");
-						//nameTranslation = require(__dirname + "/admin/i18n/en/translations.json")
 					} else {
 						systemLanguage = obj.common.language;
-						//nameTranslation = require(__dirname + "/admin/i18n/" + systemLanguage + "/translations.json")
 					}
 					if (adapter.config.piholeAllCerts === true) {
 						bolReject = false;
@@ -149,14 +145,6 @@ function activatePihole(){
 			adapter.log.error(error);
 		}
 	});
-}
-
-function translateName(strName) {
-	if(nameTranslation[strName]) {
-		return nameTranslation[strName];
-	} else {
-		return strName;
-	}
 }
 
 function getPiholeValues(strURL) {
