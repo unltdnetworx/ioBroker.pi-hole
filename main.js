@@ -105,16 +105,16 @@ function parsePiHole() {
 	try {
 		request(reqOptions, function (error, response, body) {
 			if (!error && response.statusCode == 200) {
-				const update_pattern = /Update available!/;
+				const update_pattern = new RegExp(adapter.config.piholeUpdatePattern);
 				if (body.match(update_pattern) === null) adapter.setState("updatePiholeAvailable", false);
 				else {
 					const update_arr =  body.match(update_pattern);
 					const update = update_arr[0];
-					const update_bool = update === ("Update available!") ? true : false;
-					adapter.setState(adapter.config.piholeUpdatPattern, update_bool);          
+					const update_bool = update === (adapter.config.piholeUpdatePattern) ? true : false;
+					adapter.setState("updatePiholeAvailable", update_bool);          
 				}
 			} else {
-				adapter.log.error(error, "error");
+				adapter.log.error(error);
 			}
 		});
 	} catch (e) {

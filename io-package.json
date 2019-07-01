@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "1.2.0",
+		"version": "1.2.1",
 		"news": {
+			"1.2.1": {
+				"en": "bugfix for update notification",
+				"de": "Fehlerbehebung für Update-Benachrichtigung"
+			},
 			"1.2.0": {
 				"en": "datapoint for available update",
 				"de": "Datenpunkt für verfügbare Updates"
