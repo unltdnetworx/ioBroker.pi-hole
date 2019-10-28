@@ -351,9 +351,9 @@ function ioBrokerTypeOf(typeInput) {
 		case "boolean":
 			return "indicator.working";
 		case "number":
-			return "value";
+			return "number";
 		case "string":
-			return "text";
+			return "string";
 		default:
 			return "state";
 	}

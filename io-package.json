@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "1.2.1",
+		"version": "1.2.2",
 		"news": {
+			"1.2.2": {
+				"en": "bugfix for objecttypes",
+				"de": "Fehlerbehebung für Objekttypen"
+			},
 			"1.2.1": {
 				"en": "bugfix for update notification",
 				"de": "Fehlerbehebung für Update-Benachrichtigung"
