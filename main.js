@@ -233,7 +233,7 @@ function getPiholeValues(strURL) {
 								type: "state",
 								common: {
 									name: i,
-									type: ioBrokerTypeOf(typeof(content[i])),
+									type: typeof(content[i]),
 									read: true,
 									write: false,
 									unit: "",
@@ -286,7 +286,7 @@ function getPiholeValues(strURL) {
 											type: "state",
 											common: {
 												name: i,
-												type: ioBrokerTypeOf(typeof(content[i][j])),
+												type: typeof(content[i][j]),
 												read: true,
 												write: false,
 												unit: "",
@@ -318,7 +318,7 @@ function getPiholeValues(strURL) {
 													type: "state",
 													common: {
 														name: k,
-														type: ioBrokerTypeOf(typeof(content[i][j][k])),
+														type: typeof(content[i][j][k]),
 														read: true,
 														write: false,
 														unit: "",
@@ -344,20 +344,6 @@ function getPiholeValues(strURL) {
 			adapter.log.error(error);
 		}
 	});
-}
-
-function ioBrokerTypeOf(typeInput) {
-	switch (typeInput) {
-		case "boolean":
-			return "indicator.working";
-		case "number":
-			return "number";
-		case "string":
-			return "string";
-		default:
-			return "state";
-	}
-	
 }
 
 function main() {
