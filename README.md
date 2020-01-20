@@ -72,6 +72,11 @@ Help or hints are welcome.
 
 * (unltdnetworx) initial release
 
+## Donate
+
+Kaffee spendieren/serve a coffee
+<https://paypal.me/unltdnetworx>
+
 ## License
 
 MIT License
