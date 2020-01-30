@@ -99,9 +99,6 @@
 		"supportCustoms": false,
 		"dependencies": [
 			{
-				"admin": ">=3.0.0"
-			},
-			{
 				"js-controller": ">=1.4.2"
 			}
 		]
