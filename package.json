@@ -1,6 +1,6 @@
 {
   "name": "iobroker.pi-hole",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "manage a pi-hole installation",
   "author": {
     "name": "Michael Schuster",

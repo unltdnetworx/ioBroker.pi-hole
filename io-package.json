@@ -1,8 +1,12 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "1.2.2",
+		"version": "1.2.3",
 		"news": {
+			"1.2.3": {
+				"en": "bugfix for numbers with comma",
+				"de": "Fehlerbehebung für Zahlen mit Komma"
+			},
 			"1.2.2": {
 				"en": "bugfix for objecttypes",
 				"de": "Fehlerbehebung für Objekttypen"

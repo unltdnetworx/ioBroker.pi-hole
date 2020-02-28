@@ -80,6 +80,19 @@ function startAdapter(options) {
 	return adapter;
 }
 
+function string2number(input) {
+	if (typeof(input) !== "string") {
+		return input;
+	}
+	const output = parseFloat(input.replace(/,/g, ""));
+
+	if(!isNaN(output)) {
+		return output;
+	} else {
+		return input;
+	}
+}
+
 function parsePiHole() {
 	const httpOptions = {
 		url: "http://" + adapter.config.piholeIP + "/admin/index.php",
@@ -233,7 +246,7 @@ function getPiholeValues(strURL) {
 								type: "state",
 								common: {
 									name: i,
-									type: typeof(content[i]),
+									type: typeof(string2number(content[i])),
 									read: true,
 									write: false,
 									unit: "",
@@ -243,7 +256,7 @@ function getPiholeValues(strURL) {
 							},
 							adapter.setState(
 								strURL + "." + i,
-								{val: content[i], ack: true}
+								{val: string2number(content[i]), ack: true}
 							)
 						);
 					}
@@ -286,7 +299,7 @@ function getPiholeValues(strURL) {
 											type: "state",
 											common: {
 												name: i,
-												type: typeof(content[i][j]),
+												type: typeof(string2number(content[i][j])),
 												read: true,
 												write: false,
 												unit: "",
@@ -296,7 +309,7 @@ function getPiholeValues(strURL) {
 										},
 										adapter.setState(
 											strURL + "." + i + "." + j,
-											{val: content[i][j], ack: true}
+											{val: string2number(content[i][j]), ack: true}
 										)
 									);
 								}
@@ -318,7 +331,7 @@ function getPiholeValues(strURL) {
 													type: "state",
 													common: {
 														name: k,
-														type: typeof(content[i][j][k]),
+														type: typeof(string2number(content[i][j][k])),
 														read: true,
 														write: false,
 														unit: "",
@@ -328,7 +341,7 @@ function getPiholeValues(strURL) {
 												},
 												adapter.setState(
 													strURL + "." + i + "." + j + "." + k,
-													{val: content[i][j][k], ack: true}
+													{val: string2number(content[i][j][k]), ack: true}
 												)
 											);
 										}
