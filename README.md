@@ -32,6 +32,10 @@ Help or hints are welcome.
 
 ## Changelog
 
+### 1.3.0
+
+* (unltdnetworx) info for versions and updates added, updatePiholeAvailable removed
+
 ### 1.2.3
 
 * (unltdnetworx) bugfix for numbers with comma

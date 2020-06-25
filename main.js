@@ -8,7 +8,7 @@ let piholeIntervall;
 let piholeParseIntervall;
 let url;
 let bolReject;
-const valuePaths = ["getQueryTypes","version","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
+const valuePaths = ["getQueryTypes","version","versions","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
 
 let adapter;
 function startAdapter(options) {
@@ -90,48 +90,6 @@ function string2number(input) {
 		return output;
 	} else {
 		return input;
-	}
-}
-
-function parsePiHole() {
-	const httpOptions = {
-		url: "http://" + adapter.config.piholeIP + "/admin/index.php",
-		method: "GET",
-		json: true
-	};
-
-	const httpsOptions = {
-		url: "https://" + adapter.config.piholeIP + "/admin/index.php",
-		method: "GET",
-		json: true,
-		rejectUnauthorized: bolReject/*,
-		ca: ca*/
-	};
-
-	let reqOptions;
-	if (adapter.config.piholeHttps === true) {
-		reqOptions = httpsOptions;
-	} else {
-		reqOptions = httpOptions;
-	}
-
-	try {
-		request(reqOptions, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				const update_pattern = new RegExp(adapter.config.piholeUpdatePattern);
-				if (body.match(update_pattern) === null) adapter.setState("updatePiholeAvailable", false);
-				else {
-					const update_arr =  body.match(update_pattern);
-					const update = update_arr[0];
-					const update_bool = update === (adapter.config.piholeUpdatePattern) ? true : false;
-					adapter.setState("updatePiholeAvailable", update_bool);          
-				}
-			} else {
-				adapter.log.error(error);
-			}
-		});
-	} catch (e) {
-		adapter.log.error("Unable to read pi-hole interface.");
 	}
 }
 
@@ -359,22 +317,7 @@ function getPiholeValues(strURL) {
 	});
 }
 
-function main() {
-	adapter.setObjectNotExists(
-		"updatePiholeAvailable", {
-			type: "state",
-			common: {
-				name: "pi-hole update available",
-				type: "boolean", 
-				read: true,
-				write: true,
-				role: "indicator"
-			},
-			native: {}
-		},
-		adapter.subscribeStates("updatePiholeAvailable")
-	);
-	
+function main() {	
 	adapter.setObjectNotExists(
 		"deactPiHoleTime", {
 			type: "state",
@@ -439,18 +382,12 @@ function main() {
 		getPiholeValues(item);
 	});
 
-	parsePiHole();
-
 	if(adapter.config.piholeRenew > 1) {
 		piholeIntervall = setInterval(function(){
 			valuePaths.forEach(function(item){
 				getPiholeValues(item);
 			});
 		}, (adapter.config.piholeRenew * 1000));
-
-		piholeParseIntervall = setInterval(function(){
-			parsePiHole();
-		}, (adapter.config.piholeRenew * 2000));
 	}
 }
 
