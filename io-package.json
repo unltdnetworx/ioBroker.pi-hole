@@ -84,12 +84,7 @@
 		"type": "network",
 		"compact": true,
 		"materialize": true,
-		"supportCustoms": false,
-		"dependencies": [
-			{
-				"js-controller": ">=1.4.2"
-			}
-		]
+		"supportCustoms": false
 	},
     "native": {
     },
