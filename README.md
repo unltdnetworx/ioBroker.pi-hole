@@ -32,6 +32,10 @@ Help or hints are welcome.
 
 ## Changelog
 
+### 1.3.1
+
+* (unltdnetworx) new adapter testing and security update
+
 ### 1.3.0
 
 * (unltdnetworx) info for versions and updates added, updatePiholeAvailable removed
