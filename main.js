@@ -8,6 +8,7 @@ let piholeIntervall;
 let piholeParseIntervall;
 let url;
 let bolReject;
+let summaryTimeout;
 const valuePaths = ["getQueryTypes","version","versions","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
 
 let adapter;
@@ -29,7 +30,7 @@ function startAdapter(options) {
 				}
 
 				deactivatePihole(deactTime);
-				setTimeout(function(){
+				summaryTimeout = setTimeout(function(){
 					getPiholeValues("summary");
 					getPiholeValues("summaryRaw");
 				}, 1000);
@@ -37,7 +38,7 @@ function startAdapter(options) {
 
 			if (command == "actPiHole") {
 				activatePihole();
-				setTimeout(function(){
+				summaryTimeout = setTimeout(function(){
 					getPiholeValues("summary");
 					getPiholeValues("summaryRaw");
 				}, 1000);
@@ -47,6 +48,7 @@ function startAdapter(options) {
 			try {
 				if (piholeIntervall) clearInterval(piholeIntervall);
 				if (piholeParseIntervall) clearInterval(piholeParseIntervall);
+				if (summaryTimeout) clearTimeout(summaryTimeout);
 				adapter.log.info("cleaned everything up...");
 				callback();
 			} catch (e) {
