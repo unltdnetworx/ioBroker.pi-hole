@@ -241,7 +241,7 @@ function getPiholeValues(strURL) {
 											type: "state",
 											common: {
 												name: "data-table",
-												type: "object",
+												type: "string",
 												read: true,
 												write: false,
 												unit: "",
