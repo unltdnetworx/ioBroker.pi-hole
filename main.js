@@ -213,11 +213,12 @@ function getPiholeValues(strURL) {
 									role: "value"
 								},
 								native: {}
-							},
-							adapter.setState(
-								strURL + "." + i,
-								{val: string2number(content[i]), ack: true}
-							)
+							}, function() {
+								adapter.setState(
+									strURL + "." + i,
+									{val: string2number(content[i]), ack: true}
+								)
+							}	
 						);
 					}
 				} else {
@@ -247,11 +248,12 @@ function getPiholeValues(strURL) {
 												role: "table"
 											},
 											native: {}
-										},
-										adapter.setState(
-											strURL + "." + i + ".data-table",
-											{val: "[" + JSON.stringify(content[i]) + "]", ack: true}
-										)
+										}, function() {
+											adapter.setState(
+												strURL + "." + i + ".data-table",
+												{val: "[" + JSON.stringify(content[i]) + "]", ack: true}
+											)
+										}
 									);
 								} else {
 									adapter.setObjectNotExists(
@@ -266,11 +268,12 @@ function getPiholeValues(strURL) {
 												role: "value"
 											},
 											native: {}
-										},
-										adapter.setState(
-											strURL + "." + i + "." + j,
-											{val: string2number(content[i][j]), ack: true}
-										)
+										}, function() {
+											adapter.setState(
+												strURL + "." + i + "." + j,
+												{val: string2number(content[i][j]), ack: true}
+											)
+										}
 									);
 								}
 							} else {
@@ -298,11 +301,12 @@ function getPiholeValues(strURL) {
 														role: "value"
 													},
 													native: {}
-												},
-												adapter.setState(
-													strURL + "." + i + "." + j + "." + k,
-													{val: string2number(content[i][j][k]), ack: true}
-												)
+												}, function() {
+													adapter.setState(
+														strURL + "." + i + "." + j + "." + k,
+														{val: string2number(content[i][j][k]), ack: true}
+													)
+												}
 											);
 										}
 									}
