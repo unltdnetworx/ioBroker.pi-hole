@@ -9,7 +9,7 @@ let piholeParseIntervall;
 let url;
 let bolReject;
 let summaryTimeout;
-const valuePaths = ["getQueryTypes","version","versions","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"];
+const valuePaths = ["version","versions","type","summaryRaw","summary","topItems","getQuerySources","overTimeData10mins","getForwardDestinations"]; //disabled "getQueryTypes" for creating lots of spam entries
 
 let adapter;
 function startAdapter(options) {
