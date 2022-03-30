@@ -39,7 +39,7 @@ systemDictionary = {
 		"zh-cn": "API令牌（管理面板/设置/ API /显示API令牌）"
 	},
 	"piholeRenew":  {
-		"en": "Time in seconds zu request new values from the pi-hole device.",
+		"en": "Time in seconds to request new values from the pi-hole device.",
 		"de": "Zeit in Sekunden, um neue Werte vom Pi-Hole-Gerät anzufordern.",
 		"ru": "Время в секундах zu запрашивает новые значения с устройства pi-hole.",
 		"pt": "O tempo em segundos zu solicita novos valores ao dispositivo de furo pi.",
@@ -51,7 +51,7 @@ systemDictionary = {
 		"zh-cn": "以秒为单位的时间要求pi孔设备提供新值。"
 	},
 	"piholeHttps": {
-		"en": "Use https instade of http",
+		"en": "Use https instead of http",
 		"de": "https statt http verwenden",
 		"ru": "Используйте https вместо http",
 		"pt": "Use https instade de http",
