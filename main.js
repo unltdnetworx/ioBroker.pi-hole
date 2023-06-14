@@ -336,7 +336,7 @@ function main() {
 			},
 			native: {}
 		},
-		adapter.subscribeStates("deactPiHoleTime")
+		() => adapter.subscribeStates("deactPiHoleTime")
 	);
 
 	adapter.setObjectNotExists(
@@ -351,7 +351,7 @@ function main() {
 			},
 			native: {}
 		},
-		adapter.subscribeStates("actPiHole")
+		() => adapter.subscribeStates("actPiHole")
 	);
 	
 	const httpOptions = {
