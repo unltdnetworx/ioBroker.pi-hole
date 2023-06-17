@@ -32,7 +32,7 @@ Help or hints are welcome.
 
 ## Changelog
 
-### 1.3.5
+### 1.3.6
 
 * (unltdnetworx) support for controller v5
 

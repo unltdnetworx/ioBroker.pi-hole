@@ -1,9 +1,9 @@
 {
 	"common": {
 		"name": "pi-hole",
-		"version": "1.3.5",
+		"version": "1.3.6",
 		"news": {
-			"1.3.5": {
+			"1.3.6": {
                 "en": "support for controller v5 added",
                 "de": "Unterstützung für Controller v5 hinzugefügt"
             },
